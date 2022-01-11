@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet,FlatList, Image} from 'react-native';
 import Button from 'apsl-react-native-button'
 
+const log = console.log;
 const url0 = "https://cdn.shopify.com/s/files/1/1061/1924/products/Rolling_Eyes_Emoji_Icon_d5a8401c-e785-4a6f-975d-856eadfd95de_large.png?v=1571606093"
 const url1 = "https://i.pinimg.com/originals/4f/5d/23/4f5d23170a65869ff7c210342516ad2c.jpg"
 const url2 = "https://media-exp1.licdn.com/dms/image/C560BAQHNAHcfA93quA/company-logo_200_200/0/1609622702805?e=2159024400&v=beta&t=R8yjBWPU30_9yW2US2QMruKoXHVwGnDSv_P3HL4QnDI"
@@ -11,31 +12,40 @@ const COLOR_WA2 = '#397e76'
 const COLOR_WA3 = '#518e87'
 const COLOR_WA4 = '#83afaa'
 const ADDTO = 'Add To WhatsApp'
-const image_data = [
-  {bg:'white'},
-  {bg:'white'},
-  {bg:'white'},
-  {bg:'white'},
-  // {bg:'white'},
-  // {bg:'white'},
-  // {bg:'white'},
-  // {bg:'white'},
-  // {bg:'midnightblue'},
-]
+const ROOT = "file:///";
+// const image_data = [
+//   {bg:'white'},
+//   {bg:'white'},
+//   {bg:'white'},
+//   {bg:'white'},
+//   // {bg:'white'},
+//   // {bg:'white'},
+//   // {bg:'white'},
+//   // {bg:'white'},
+//   // {bg:'midnightblue'},
+// ]
 
-let len =image_data.length;
-let remain = len%3
-let miss = 3-remain;
-// if(remain) miss==1?image_data.push({bg:'aliceblue', add:1}):image_data.push( {bg:'skyblue', add:'1'},{bg:'turquoise', add:'2'} )
-for(let i =1;i<=30-len;i++){
-  let index = i-1;
-  image_data.push({bg:'aliceblue', add:1})
-}
+// let len =image_data.length;
+// let remain = len%3
+// let miss = 3-remain;
+// // if(remain) miss==1?image_data.push({bg:'aliceblue', add:1}):image_data.push( {bg:'skyblue', add:'1'},{bg:'turquoise', add:'2'} )
+// for(let i =1;i<=30-len;i++){
+//   let index = i-1;
+//   image_data.push({bg:'aliceblue', add:1})
+// }
 
-const DetailsScreen = ({ navigation }) => {
+const DetailsScreen = ({ route, navigation }) => {
+    
+    const [Pack, setStickers] = React.useState({
+      title:Object.keys(route.params.Stickers),
+      tray:ROOT+Object.values(route.params.Stickers)[0][0].path,
+      stickers:Object.values(route.params.Stickers)[0].map(i=>i.path)
+    })
 
     const renderPacks =({item})=>{
-      let uri = item.add?url1:url0;
+      //! handle the https url
+      // log(item)
+      let uri = item?ROOT+item:url0;
       // return <View style={styles.body.iconContainer}></View>
       return(
         <View style={styles.body.iconContainer}>
@@ -45,22 +55,22 @@ const DetailsScreen = ({ navigation }) => {
       );
     }
 
-    console.log(image_data)
+    // console.log(image_data)
     return (
       <View style={styles.container} >
         <View style={styles.head.container}>
           <View style={styles.head.left}>
-            <Image style={styles.icon.main} source={{uri:url2}}/>
+            <Image style={styles.icon.main} source={{uri:Pack.tray || url2}}/>
           </View>
           <View style={styles.head.right}>
-            <Text style={styles.head.text.Title}>Sticker Pack Name Here</Text>
+            <Text style={styles.head.text.Title}>{Pack.title}</Text>
             <Text style={styles.head.text.Author}>Author name</Text>
             <Text style={styles.head.text.Animated}>Animated</Text>
-            <Text style={styles.head.text.size}>0/30</Text>
+            <Text style={styles.head.text.size}>{Pack.stickers.length}/30</Text>
           </View>
         </View>
         <View style={styles.body.container}>
-          <FlatList data={ image_data }
+          <FlatList data={ Pack.stickers }
               numColumns={3} 
               // contentContainerStyle={{ height: '100%' }}
               keyExtractor={(item, index) =>  index.toString() } 

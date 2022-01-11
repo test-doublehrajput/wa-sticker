@@ -4,7 +4,8 @@ import Button from 'apsl-react-native-button'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import HomeStyle from 'app1/src/Style/HomeStyle';
-import GetStickersAsset, {getDemo} from 'app1/src/utils/Stickers'
+import GetStickersAsset, {getDemo, delPack} from 'app1/src/utils/Stickers'
+
 
 const url1 = "https://i.pinimg.com/originals/4f/5d/23/4f5d23170a65869ff7c210342516ad2c.jpg"
 const url2 = "https://media-exp1.licdn.com/dms/image/C560BAQHNAHcfA93quA/company-logo_200_200/0/1609622702805?e=2159024400&v=beta&t=R8yjBWPU30_9yW2US2QMruKoXHVwGnDSv_P3HL4QnDI"
@@ -14,9 +15,10 @@ const COLOR_WA2 = '#397e76'
 const COLOR_WA3 = '#518e87'
 const COLOR_WA4 = '#83afaa'
 const color = ['FED1EF', 'A3E4DB', 'BAABDA', 'F2FFE9', 'FFB5B5']
-
+const ROOT = "file:///";
 
 const log = console.log;
+
 
 
 
@@ -30,87 +32,27 @@ export default function PackList({nav, data}){
         }) 
     },[])
 
-    const image_data = [{
-
-        name:'Heart',
-        size:30/30,
-        isAnimated:true,
-        Authur:'Donald',
-        tray:'url', 
-        stickers:[
-            {image_file:'url', emojis:['🔥','🤔']},
-            {image_file:'url', emojis:['🔥','🤔']},
-        ] 
-    },
-    {
-
-        name:'Animal',
-        size:30/30,
-        isAnimated:true,
-        Authur:'Biden',
-        tray:'url', 
-        stickers:[
-            {image_file:'url', emojis:['🔥','🤔']},
-            {image_file:'url', emojis:['🔥','🤔']},
-        ] 
-    },
-    // {
-
-    //     name:'Vehicles',
-    //     size:30/30,
-    //     isAnimated:true,
-    //     Authur:'Elon',
-    //     tray:'url', 
-    //     stickers:[
-    //         {image_file:'url', emojis:['🔥','🤔']},
-    //         {image_file:'url', emojis:['🔥','🤔']},
-    //     ]
-    // },
-    // {
-
-    //     name:'Vehicles',
-    //     size:30/30,
-    //     isAnimated:true,
-    //     Authur:'Elon',
-    //     tray:'url', 
-    //     stickers:[
-    //         {image_file:'url', emojis:['🔥','🤔']},
-    //         {image_file:'url', emojis:['🔥','🤔']},
-    //     ]
-    // },
-    // {
-
-    //     name:'Vehicles',
-    //     size:30/30,
-    //     isAnimated:true,
-    //     Authur:'Elon',
-    //     tray:'url', 
-    //     stickers:[
-    //         {image_file:'url', emojis:['🔥','🤔']},
-    //         {image_file:'url', emojis:['🔥','🤔']},
-    //     ]
-    // },
-    ]
-
     // const IconMain =()=><Image style={styles.IconMain} source={{uri:url1}}/>
-    const Sticker =({main, trayUri })=>{
+    const Sticker =({main, trayUri, previewURI })=>{
         let style1 = {};
-        let uri = url1;
+        let uri = '';
+
         if (main){
+            uri = trayUri?ROOT+trayUri:url1;
             style1=styles.icon.main;
-            uri = trayUri   
         }else{
-            style1=styles.icon.sub
+            uri = previewURI?ROOT+previewURI:url1;
+            style1=styles.icon.sub;
         }
+        
 
-
-        return <Image style={style1} source={{uri:uri}}/>
+        return <Image style={style1} source={{uri:uri?uri:url1}}/>
     }
 
     const Left =({trayUri})=> {
         return (<View style={styles.left}><Sticker main={true} trayUri={trayUri}/></View>);
     }
-    const Mid =({title})=> {
+    const Mid =({title, preview})=> {
         // console.log('ok');
         return (
 
@@ -122,15 +64,15 @@ export default function PackList({nav, data}){
                 <Text style={styles.info.upContainer.packType}>Animated</Text>
             </View>
             <View style={styles.info.downContainer}>
-                <Sticker main={false}/>
-                <Sticker main={false}/>
-                <Sticker main={false}/>
+                <Sticker main={false} previewURI = {preview[0]}/>
+                <Sticker main={false} previewURI = {preview[1]}/>
+                <Sticker main={false} previewURI = {preview[2]}/>
             </View>
         </View>
 
         );
     }
-    const Right =({size})=>{
+    const Right =({size, identifier})=>{
         return (
             <View style={styles.right.container}>
                 <View style={styles.right.upContainer}>
@@ -153,7 +95,7 @@ export default function PackList({nav, data}){
                         {/* <Pressable onPress={()=>Alert.alert('share')}> */}
 
                         <View style={styles.right.downContainer.share}>
-                            <Button style={{borderWidth:0}}>
+                            <Button style={{borderWidth:0}} onPress={()=>delPack(identifier)}>
                                 <Icon name="share-alt" size={20} color={COLOR_WA4} />
                             </Button>
                         </View>
@@ -175,29 +117,34 @@ export default function PackList({nav, data}){
     const renderPacks = ({item, index}) =>{
         let title = Object.keys(item)[0]
         let size = Object.values(item)[0].length
-        // let tray = size?url1:'file:///'+Object.values(item)[0][0].path
-        let trayUri = url1;
+        let trayUri = '';
+        let preview = [];
+        
+        // TODO: try naming it "tray" while writing to ouput File stream 
+        // TODO: OR after send() save the result 1{...} and use it to assign the packs here
+        // TODO: AND explore if anything possible to avoid above options; intent getExtra and all.
 
-        if (size!==0){
-            trayUri = "file:///"+Object.values(item)[0][0].path;
+        if (size){
+            trayUri = Object.values(item)[0][0]?.path;
+            preview[0] = Object.values(item)[0][1]?.path || null
+            preview[1] = Object.values(item)[0][2]?.path || null
+            preview[2] = Object.values(item)[0][3]?.path || null
         }
-        
-        // let Title = Object.values(item)[0]
-        
-        // log(Object.keys(obj))
-        return (
-            <Pressable onPress={()=>nav.navigate('Details')} >
-                <View style={styles.item}>
-                    <Left trayUri={trayUri}/>
-                    {/* <Pressable style={{backgroundColor:'red', padding:0}} onPress={()=>Alert.alert('hi')} > */}
-                        <Mid title={title}/>
-                    {/* </Pressable> */}
-                    <Right size={size}/> 
-                    {/* 
-                    */}
-                </View>
-            </Pressable>
-        );
+        if(size){
+            return (
+                    <Pressable onPress={()=>nav.navigate('Details', {Stickers:item})}  >
+                    <View style={styles.item}>
+                        <Left trayUri={trayUri}/>
+                        {/* <Pressable style={{backgroundColor:'red', padding:0}} onPress={()=>Alert.alert('hi')} > */}
+                            <Mid title={title} preview={preview}/>
+                        {/* </Pressable> */}
+                        <Right size={size} identifier={title}/> 
+                        {/* 
+                        */}
+                    </View>
+                </Pressable>
+            );
+        }
     }
 
     return(
