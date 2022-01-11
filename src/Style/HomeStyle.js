@@ -38,7 +38,7 @@ const HomeStyle = StyleSheet.create({
         // backgroundColor:'white',        
     },
     footer:{
-        flex:4,
+        flex:2,
         backgroundColor:'slategrey',        
     },
     buttons:{

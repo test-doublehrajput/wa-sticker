@@ -1,5 +1,16 @@
 import React from 'react';
-import {View, Text, ScrollView,StyleSheet, FlatList, Pressable,Image, Alert } from 'react-native';
+import {
+    View, 
+    Text, 
+    ScrollView,
+    StyleSheet, 
+    FlatList, 
+    Pressable,
+    Image, 
+    Alert,
+    ToastAndroid,
+ } from 'react-native';
+
 import Button from 'apsl-react-native-button'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -20,18 +31,33 @@ const ROOT = "file:///";
 const log = console.log;
 
 
-
+const Toast = msg => ToastAndroid.showWithGravity(msg, ToastAndroid.SHORT,ToastAndroid.CENTER)
 
 export default function PackList({nav, data}){
     const [ StickersAsset, setAsset] = React.useState({});
+    const [ Refresh, doRefresh] = React.useState(false);
 
     React.useEffect(()=>{
         GetStickersAsset()
         .then(res=>{
             setAsset(res)
         }) 
-    },[])
+    },[Refresh]) // render list when item is deleted
 
+    const del=(identifier)=>{
+
+        delPack(identifier) // delete
+        .then(res=>{
+            Toast(`Deleting \"${identifier}\"`) // inform
+            doRefresh(p=>!p) // refresh
+        })
+        .catch(err=>Alert.alert('⚠️ Could not delete', 'Please report to...'))
+
+ 
+        // log(StickersAsset)
+        // log(typeof StickersAsset)
+        // doRefresh(1)
+    }
     // const IconMain =()=><Image style={styles.IconMain} source={{uri:url1}}/>
     const Sticker =({main, trayUri, previewURI })=>{
         let style1 = {};
@@ -95,14 +121,14 @@ export default function PackList({nav, data}){
                         {/* <Pressable onPress={()=>Alert.alert('share')}> */}
 
                         <View style={styles.right.downContainer.share}>
-                            <Button style={{borderWidth:0}} onPress={()=>delPack(identifier)}>
+                            <Button style={{borderWidth:0}} onPress={()=>Alert.alert('Share', '⚠️ TODO')}>
                                 <Icon name="share-alt" size={20} color={COLOR_WA4} />
                             </Button>
                         </View>
                         {/* </Pressable> */}
                         <View style={styles.right.downContainer.download}>
-                            <Button style={{borderWidth:0}}>
-                                <Icon name="download" size={20} color={COLOR_WA4} />
+                            <Button style={{borderWidth:0}} onPress={ ()=> del(identifier) } >
+                                <Icon name="trash" size={20} color={COLOR_WA4} />
                             </Button>
                         </View>
               
@@ -115,6 +141,7 @@ export default function PackList({nav, data}){
     }
 
     const renderPacks = ({item, index}) =>{
+        // log('rending.....',index)
         let title = Object.keys(item)[0]
         let size = Object.values(item)[0].length
         let trayUri = '';
@@ -123,16 +150,25 @@ export default function PackList({nav, data}){
         // TODO: try naming it "tray" while writing to ouput File stream 
         // TODO: OR after send() save the result 1{...} and use it to assign the packs here
         // TODO: AND explore if anything possible to avoid above options; intent getExtra and all.
-
+        
         if (size){
             trayUri = Object.values(item)[0][0]?.path;
             preview[0] = Object.values(item)[0][1]?.path || null
             preview[1] = Object.values(item)[0][2]?.path || null
             preview[2] = Object.values(item)[0][3]?.path || null
         }
+
+        // create data to pass it to detail page
+        const detail = {
+            title:title,
+            size:size, 
+            Stickers:item, 
+            tray:trayUri
+        }
+
         if(size){
             return (
-                    <Pressable onPress={()=>nav.navigate('Details', {Stickers:item})}  >
+                    <Pressable onPress={()=>nav.navigate('Details', detail)}  >
                     <View style={styles.item}>
                         <Left trayUri={trayUri}/>
                         {/* <Pressable style={{backgroundColor:'red', padding:0}} onPress={()=>Alert.alert('hi')} > */}

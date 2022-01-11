@@ -12,7 +12,7 @@ const COLOR_WA2 = '#397e76'
 const COLOR_WA3 = '#518e87'
 const COLOR_WA4 = '#83afaa'
 const ADDTO = 'Add To WhatsApp'
-const ROOT = "file:///";
+const ROOT = "file://";
 // const image_data = [
 //   {bg:'white'},
 //   {bg:'white'},
@@ -35,15 +35,27 @@ const ROOT = "file:///";
 // }
 
 const DetailsScreen = ({ route, navigation }) => {
-    
+
     const [Pack, setStickers] = React.useState({
-      title:Object.keys(route.params.Stickers),
-      tray:ROOT+Object.values(route.params.Stickers)[0][0].path,
-      stickers:Object.values(route.params.Stickers)[0].map(i=>i.path)
+      title: route.params.title,
+      tray: ROOT+route.params.tray,
+      size: route.params.size,
+      stickers: Object.values(route.params.Stickers)[0].map(i=>i.path),
+      toAdd: 3 - Object.values(route.params.Stickers)[0].length%3,
+      canAdd : 1,
     })
 
+    // lets make the cells as 3x count 
+    // to prevent the size changing of cells of last row 
+    // when it contains 1 or 2 cells
+    if (Pack.canAdd) {
+      if (Pack.toAdd === 1) Pack.stickers.push([])
+      if (Pack.toAdd === 2) Pack.stickers.push([],[])
+      Pack.canAdd = 0
+    }
+    
     const renderPacks =({item})=>{
-      //! handle the https url
+      // TODO: should handle the https url
       // log(item)
       let uri = item?ROOT+item:url0;
       // return <View style={styles.body.iconContainer}></View>
@@ -66,7 +78,7 @@ const DetailsScreen = ({ route, navigation }) => {
             <Text style={styles.head.text.Title}>{Pack.title}</Text>
             <Text style={styles.head.text.Author}>Author name</Text>
             <Text style={styles.head.text.Animated}>Animated</Text>
-            <Text style={styles.head.text.size}>{Pack.stickers.length}/30</Text>
+            <Text style={styles.head.text.size}>{Pack.size}/30</Text>
           </View>
         </View>
         <View style={styles.body.container}>

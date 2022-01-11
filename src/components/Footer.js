@@ -9,6 +9,7 @@ import {
     PermissionsAndroid,
     Image,
     Switch,
+    Appearance,
 } from 'react-native';
 import RNWhatsAppStickers from 'react-native-whatsapp-stickers';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
@@ -37,6 +38,7 @@ const ANIMATED_URL = [
     "https://raw.githubusercontent.com/WhatsApp/stickers/main/Android/app/src/main/assets/2/07_OK.webp",
     "https://raw.githubusercontent.com/WhatsApp/stickers/main/Android/app/src/main/assets/2/07_OK.webp",
 ]
+
 
 
 const emojis = ['😁', '🙂']
@@ -131,34 +133,13 @@ export default function Footer({navigation}){
     }
 
     const toggleSwitch =()=> setAnimated(prev=>!prev)
+    
     return(
         <>
-                            <Image style={{width:100, height:100}}  
-                          resizeMode="cover" 
-                          source={{uri: "file:///data/user/0/com.app1/files/stickers_asset/id1/02_Cuppy_lol.webp"}}
-                    />
-            <><Text style={{color:'white'}}>{isAnimated?'Animated':'Static'}{'\n'}Name:{text}</Text></>
-            <View>
-                    <Switch
-                        trackColor={{ false: "#767577", true: "#81b0ff" }}
-                        thumbColor={isAnimated ? "#f5dd4b" : "#f4f3f4"}
-                        // ios_backgroundColor="#3e3e3e"
-                        onValueChange={toggleSwitch}
-                        value={isAnimated}
-                    />
-            </View>
-            <View>
-                <TextInput 
-                        onChangeText={onChangeText}
-                        // onFocus={() =>console.log("focus received" ) }
-                        // onBlur={() => console.log("focus lost") }
-                        value={text}
-                        style={styles.inpt}
-                />
-            </View>
-        <Pressable onPress={pick}>
-            <Text style={styles.add}> ADD </Text>
-        </Pressable>
+
+            <Pressable>
+                <Text style={styles.add}> ADD </Text>
+            </Pressable>
 
         </>
     );
@@ -166,7 +147,7 @@ export default function Footer({navigation}){
 
 const styles = StyleSheet.create({
     add:{
-        height:50,
+        height:30,
         backgroundColor:'tomato',
         fontSize:20,
         color:'white',

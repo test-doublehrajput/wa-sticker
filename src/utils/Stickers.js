@@ -45,9 +45,9 @@ const GetStickersAsset = () =>{
 export const delPack =(folder)=> {
     let path = "/data/user/0/com.app1/files/stickers_asset/"+folder;
     try{
-        RNFS.unlink(path)
-        .then(res=>log(res))
-        .catch(rej=>log(rej))
+        return RNFS.unlink(path)
+        
+        // .catch(rej=>log(rej))
     }catch(err){
         log('err: ', err)
     }
