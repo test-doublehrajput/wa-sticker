@@ -209,8 +209,8 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         height:130,
         backgroundColor:'white',
-        borderWidth:2,
-        borderRadius:18,
+        borderWidth:1,
+        borderRadius:10,
         borderColor:'#DCDCDC',
         marginTop:10,
         // marginBottom:8,
@@ -220,8 +220,8 @@ const styles = StyleSheet.create({
         // shadowOffset: {width: 2, height: 4},
         // shadowOpacity: 0.2,
         // shadowRadius: 3,
-        // elevation: 2,
-        // shadowColor: '#52006A',
+        elevation: 2,
+        shadowColor: 'black',
         // zIndex:900
     },
     left:{

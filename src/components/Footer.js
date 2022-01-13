@@ -9,11 +9,11 @@ import {
     PermissionsAndroid,
     Image,
     Switch,
-    Appearance,
 } from 'react-native';
 import RNWhatsAppStickers from 'react-native-whatsapp-stickers';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 // import {RNFS} from 'react-native-fs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 var RNFS = require('react-native-fs');
 
 const log = console.log;
@@ -24,20 +24,6 @@ const Meta = {
     POLICY: 'https://github.com/Jobeso/react-native-whatsapp-stickers',
     LICENSE: 'https://github.com/Jobeso/react-native-whatsapp-stickers/blob/master/LICENSE',
   }
-
-const STATIC_URL =[
-        "https://raw.githubusercontent.com/WhatsApp/stickers/main/Android/app/src/main/assets/1/tray_Cuppy.png",
-        "https://raw.githubusercontent.com/WhatsApp/stickers/main/Android/app/src/main/assets/1/01_Cuppy_smile.webp",
-        "https://raw.githubusercontent.com/WhatsApp/stickers/main/Android/app/src/main/assets/1/02_Cuppy_lol.webp",
-        "https://raw.githubusercontent.com/WhatsApp/stickers/main/Android/app/src/main/assets/1/03_Cuppy_rofl.webp"
-    ]
-
-const ANIMATED_URL = [
-    "https://raw.githubusercontent.com/WhatsApp/stickers/main/Android/app/src/main/assets/2/01.png",
-    "https://raw.githubusercontent.com/WhatsApp/stickers/main/Android/app/src/main/assets/2/07_OK.webp",
-    "https://raw.githubusercontent.com/WhatsApp/stickers/main/Android/app/src/main/assets/2/07_OK.webp",
-    "https://raw.githubusercontent.com/WhatsApp/stickers/main/Android/app/src/main/assets/2/07_OK.webp",
-]
 
 
 
@@ -68,40 +54,62 @@ const pack1 = (tray, non_tray, name, isAnimated) => {
     return data;
 }
 
-// RNWhatsAppStickers.getDownloadedStickers().then(res=>log('ignore it | :',res));
-try{
-    RNFS.readDir(RNFS.DocumentDirectoryPath) // On Android, use "RNFS.DocumentDirectoryPath" (MainBundlePath is not defined)
-  .then((result) => {
-    let stickers_asset_path = result.filter(item=>item.name === 'stickers_asset')[0].path;
-    // log('Got path? ',stickers_asset_path);
-    // console.log('GOT RESULT', result);
-    // stat the first file
+const storeData = async (value) => {
+    let data =  {
+        "identifier": "name",
+        "name": "name",
+        "publisher": Meta['PUB'],
+        "tray_image_file": 'tray[0].uri',
+        "publisher_email": Meta['EMAIL'],
+        "publisher_website": Meta['SITE'],
+        "privacy_policy_website": Meta['POLICY'],
+        "license_agreement_website": Meta['LICENSE'],
+        "image_data_version":"1",
+        "avoid_cache":false,
+        "animated_sticker_pack":"isAnimated",
+        "stickers":"stickers(non_tray)"
+        }
     
-    return RNFS.readDir("file:///data/user/0/com.app1/files/stickers_asset/");
-  })
-  .then((statResult) => {
-    // log('statResult ',statResult);
-  })
-//   .then(content=>{
-//       log(content)
-//   })
-  .catch((err) => {
-    console.log(err.message, err.code);
-  });
-}catch(err){
-    log('err: ', err.toString());
+    try {
+      await AsyncStorage.setItem('@storage_Key2', 'JSON.stringify(data)' )
+    } catch (e) {
+      // saving error
+    }
 }
-// //
+const getData = async (value) => {
+    try {
+      const value = await AsyncStorage.getItem('@storage_Key2')
+      if(value !== null) {
+          log(value)
+        // value previously stored
+      }
+    } catch(e) {
+      // error reading value
+    }
+  }
+
+  const getAllKeys = async (value) => {
+    try {
+      const value = await AsyncStorage.getAllKeys()
+      if(value !== null) {
+          log(value)
+        // value previously stored
+      }
+    } catch(e) {
+      // error reading value
+    }
+  }
+
+getAllKeys()
+
 export default function Footer({navigation}){
     
     const [text, setText] = useState('')
+    const [data, setData] = useState('')
     const [isAnimated, setAnimated] = useState(false)
     const [path, setPath] = useState('')
 
-    const onChangeText =(text)=> {
-        console.log('changed to ',text)
-        setText(text)
-    }
+    const onChangeText =text=> setText(text)
 
     const send = () => {
         pack1(text);
@@ -133,30 +141,54 @@ export default function Footer({navigation}){
     }
 
     const toggleSwitch =()=> setAnimated(prev=>!prev)
-    
+    // Create screen will contain
+    //    anim static
+    // fotter button will be entry to this screen
     return(
-        <>
-
-            <Pressable>
-                <Text style={styles.add}> ADD </Text>
-            </Pressable>
-
-        </>
+        <View style={styles.container}>
+            <Text style={styles.text1}> Under Development </Text>
+            {/* <Pressable style={styles.inpt}>
+             
+            </Pressable> */}
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    container:{
+      flex:1,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      // declare in Homeastyle.js
+      marginBottom:6,
+    },
+    text1:{
+      color:'white', fontWeight:'400', fontSize:20, letterSpacing:4,
+    },
     add:{
-        height:30,
-        backgroundColor:'tomato',
-        fontSize:20,
+        flex:1,
+        backgroundColor:'green',
+        fontSize:12,
         color:'white',
-        // margin:20
+        margin:4,
+        borderWidth:2,
+        borderColor:'white',
+        borderBottomRightRadius:50,
+        borderTopRightRadius:50,
     },
     inpt:{
-        height:50,
-        backgroundColor:'teal',
+        flex:1,
+        backgroundColor:'green',
+        fontSize:12,
         color:'white',
-        // marginBottom:20
+        margin:4,
+        borderWidth:2,
+        borderColor:'white',
+        borderBottomLeftRadius:50,
+        borderTopLeftRadius:50,
     }
 })
+
+
+

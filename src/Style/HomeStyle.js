@@ -38,8 +38,12 @@ const HomeStyle = StyleSheet.create({
         // backgroundColor:'white',        
     },
     footer:{
-        flex:2,
-        backgroundColor:'slategrey',        
+        flex:1,
+        flexDirection: 'row',
+        padding:4,
+        backgroundColor:'teal',
+        shadowColor:'black',
+        elevation:-40
     },
     buttons:{
         height:12,

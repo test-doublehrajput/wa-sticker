@@ -5,7 +5,9 @@ import {
   Text, 
   View,  
   FlatList,
-  StatusBar, } from 'react-native'
+  StatusBar, 
+  TouchableOpacity,
+} from 'react-native'
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Button from 'apsl-react-native-button'
@@ -17,6 +19,7 @@ import HomeStyle from '../Style/HomeStyle';
 import DropdownComponent from '../components/SortButton';
 import PackList from '../components/PackList';
 import Footer from '../components/Footer';
+import Float from '../components/Float';
 
 
 const data = [
@@ -55,12 +58,11 @@ export default function HomeScreen({ navigation }){
       <>
       <StatusBar backgroundColor='white' barStyle="dark-content" />
 
-
       <View style={HomeStyle.control} > 
           <View style={HomeStyle.control.types}> 
             <FilterButtons />
           </View>
-
+      
           <View style={HomeStyle.control.sort}> 
             {sortIcon}
             <Text style={HomeStyle.control.sort.text}>A-Z {' '}  Newly {' '} Older</Text>
@@ -71,6 +73,8 @@ export default function HomeScreen({ navigation }){
         <PackList nav={navigation} data={{name:'name1',no:123}}/>
       </View>
 
+
+      <Float nav={navigation}/>
       <View style={HomeStyle.footer}> 
         <Footer/>
       </View>
