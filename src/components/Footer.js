@@ -80,7 +80,7 @@ const getData = async (value) => {
     try {
       const value = await AsyncStorage.getItem('@storage_Key2')
       if(value !== null) {
-          log(value)
+          // log(value)
         // value previously stored
       }
     } catch(e) {
@@ -92,7 +92,7 @@ const getData = async (value) => {
     try {
       const value = await AsyncStorage.getAllKeys()
       if(value !== null) {
-          log(value)
+          // log(value)
         // value previously stored
       }
     } catch(e) {

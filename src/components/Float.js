@@ -13,7 +13,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const CreateIcon = () => <Icon name='plus-circle' size={18} color='white' /> 
 
 const Float = ({nav}) => {
-  console.log(nav)  
+  // console.log(nav)  
   return(
         <Pressable
         style={{
@@ -34,7 +34,7 @@ const Float = ({nav}) => {
           // shadowRadius: 43,
           elevation: 20,
         }}
-        onPress={()=>nav.navigate('Gallary') }
+        onPress={()=>nav.navigate('Create') }
         >
 
             <Text style={{color:'white',fontSize:16, fontWeight:'600',}}> <CreateIcon/> {''} Create</Text> 
