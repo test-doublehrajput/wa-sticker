@@ -169,24 +169,18 @@ export default function Storage0(){
           return item[key].length
         });
         
-        
-        // convert the array to object {Folder:[files],...} for ease of access later 
-        // let t = res1.map(i=>Gallary[i[0]] = i[1])
-        // log(t.length) // 34 folders
-        // log(noNull.length) // 34 folders
-        
-        // log(final)
-        // final.map(i=>log(i[Object.keys(i)[0]].length) )
-        // get rid of all functions exist in oebject because It could cause error in some cases; i.e route, storing 
-        // Gallary = JSON.parse(JSON.stringify(Gallary))
-
         // get rid of all functions exist in oebject because It could cause error in some cases; i.e route, storing 
         let final = JSON.parse(JSON.stringify(imagesOnly))
         
-        // log(Gallary)
-        // log('after ',Gallary['0'])
+        
+        // convert the array to object {Folder:[files],...} for ease of access later 
+        let arrGallary = final.map(i=>Object.values(i))
+        // arrGallary.map(i=>log(i))
+        let flatArray = arrGallary.flat().flat()
+        let sortArray = flatArray.sort((next,prev) => Date.parse(prev.mtime)-Date.parse(next.mtime))
+        
+        return sortArray;
         return final;
-        // return Gallary;
     } )
     
   }catch(e){log(e)}

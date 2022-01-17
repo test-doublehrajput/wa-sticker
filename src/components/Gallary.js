@@ -34,7 +34,7 @@ const FolderButton = () => (
 // }
     
 
-export default function Gallary({route, navigation, demo}){
+export default function Gallary({route, navigation, setP}){
     const [allPaths, setAll] = React.useState([{}]);
     // TODO 
     const [Folders, setFolders] = React.useState({});
@@ -43,17 +43,19 @@ export default function Gallary({route, navigation, demo}){
     
     // 
     React.useEffect(()=>{  
-        Storage0().then(res=>{      
-            res.map(i=>{
-                let k = Object.keys(i);
-                let v = Object.values(i);
-                setAll((prev)=>[...prev, ...v.flat()])
-                setFolders({[k]:v})
+        //* For Foldered
+        // Storage0().then(res=>{      
+        //     res.map(i=>{
+        //         let k = Object.keys(i);
+        //         let v = Object.values(i);
+        //         setAll((prev)=>[...prev, ...v.flat()])
+        //         setFolders({[k]:v})
                 
-            })
-            return res;
-        })
-        // .then(res2 => setFolders(res2) )
+        //     })
+        //     return res;
+        // })
+        //* For Sorted Flat Array (All files only)
+        Storage0().then(res=>setAll(p=>[...p,...res]))
     },[])
     React.useEffect(()=>{  
         // log(Selected)
@@ -71,7 +73,7 @@ export default function Gallary({route, navigation, demo}){
         // return ImageCell(uri)
 
         return (
-            <Pressable onPress={()=>select(p=>[...p,item.path])}>
+            <Pressable onPress={()=>setP(p=>[...p,item.path])}>
                 <Image style={styles.gallary.img} 
                         source={{uri:uri}} 
                         />
@@ -93,13 +95,13 @@ export default function Gallary({route, navigation, demo}){
 
     return (
         <View style={styles.main}>
-            <Pressable onPress={()=>{
+            {/* <Pressable onPress={()=>{
                 demo('new 123')
                 return Alert.alert('blank')
             }} >
                 <Text>Press Me</Text>
-            </Pressable>
-            <View style={styles.preview.container}> 
+            </Pressable> */}
+            {/* <View style={styles.preview.container}> 
                 <FlatList data={Selected}
                     horizontal={true}
                     numRows={1} 
@@ -108,8 +110,7 @@ export default function Gallary({route, navigation, demo}){
                     renderItem={renderSelected}
                     style={styles.preview.flatlist}
                 />
-            </View>
-
+            </View> */}
             <View style={styles.gallary.container}>
                 <FlatList data={allPaths}
                 numColumns={3} 
@@ -126,9 +127,9 @@ export default function Gallary({route, navigation, demo}){
 const styles = StyleSheet.create({
     main:{
         flex:1, 
-        flexDirection:'column', 
-        justifyContent:'center',
-        alignItems:'center'
+        // flexDirection:'column', 
+        // justifyContent:'center',
+        // alignItems:'center'
     },
 
     pack:{

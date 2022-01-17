@@ -21,38 +21,28 @@ import PackList from '../components/PackList';
 import Footer from '../components/Footer';
 import Float from '../components/Float';
 
+import RNFS from 'react-native-fs';
 
-const data = [
-  { label: 'Item 1', value: '1' },
-  { label: 'Item 2', value: '2' },
-  // { label: 'Item 3', value: '3' },
-  // { label: 'Item 4', value: '4' },
-  // { label: 'Item 5', value: '5' },
-  // { label: 'Item 6', value: '6' },
-  // { label: 'Item 7', value: '7' },
-  // { label: 'Item 8', value: '8' },
-];
+// console.log('ok home')
+
+// RNFS.readDir('/data/user/0/com.app1/files/stickers_asset').then(res=>{
+//   res.map(i=>{
+//     if (i.isDirectory()) console.log(i.name)
+//   })
+// })
+
+RNFS.readDir(RNFS.DocumentDirectoryPath ).then(res=>{
+  res.map(i=>{
+    if (i.isDirectory()) {
+      return RNFS.stat(i.path).then(r=>console.log(r))
+    }
+  })
+})
+
 
 const sortIcon = <Icon name="sort-amount-desc" size={20} color="grey" style={HomeStyle.control.sort.icon} />
 
-const myButton = (
-  <Icon.Button
-    name="sort-amount-desc"
-    color="grey"
-    backgroundColor="white"
-    // onPress={this.loginWithFacebook}
-  >
-    Alphabetical
-  </Icon.Button>
-);
-
 export default function HomeScreen({ navigation }){
-
-    const renderIt = ({item})=>{
-      return(
-        <Text>{item.name}</Text>
-      );
-    }
 
     return (
       <>
