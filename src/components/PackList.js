@@ -13,6 +13,7 @@ import {
 
 import Button from 'apsl-react-native-button'
 import Icon from 'react-native-vector-icons/FontAwesome';
+import RNWhatsAppStickers from 'react-native-whatsapp-stickers'
 
 import HomeStyle from 'app1/src/Style/HomeStyle';
 import GetStickersAsset, {getDemo, delPack} from 'app1/src/utils/Stickers'
@@ -32,6 +33,8 @@ const log = console.log;
 
 
 const Toast = msg => ToastAndroid.showWithGravity(msg, ToastAndroid.SHORT,ToastAndroid.CENTER)
+
+const send =(id)=> RNWhatsAppStickers.send(id,id)
 
 export default function PackList({nav, data}){
     const [ StickersAsset, setAsset] = React.useState({});
@@ -113,6 +116,7 @@ export default function PackList({nav, data}){
                         // width:60,
                         // width:80,
                         }} textStyle={{color:COLOR_WA4,fontWeight:"800", fontSize:12}}
+                        onPress={()=>send(identifier)}
                         >
                         Add
                     </Button>

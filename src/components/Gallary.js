@@ -13,13 +13,14 @@ import {
 
 import RNFS from 'react-native-fs';
 import Icon from 'react-native-vector-icons/Entypo';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 import Storage0 from '../utils/Storage0';
 
 const log = console.log; 
 
-const FolderButton = () => (
-    <Pressable onPress={() => Alert.alert('ok')} style={styles.gallary.folderIcon}>
+const FolderButton = ({pick}) => (
+    <Pressable onPress={pick} style={styles.gallary.folderIcon}>
         <View style={styles.icon}> 
             <Icon name="folder-images" size={40} color="teal"/> 
         </View>
@@ -61,12 +62,18 @@ export default function Gallary({route, navigation, setP}){
         // log(Selected)
     },[Selected])
     // log(allPaths[0])
+    const pick=()=>{
+        launchImageLibrary({
+            multiple: true,
+        })
+        .then(images =>setP(p=>[...p,...images['assets'].map(i=>i.uri)]))
+    }
     const renderImages =({item})=>{
         // let demo = "https://4.img-dpreview.com/files/p/E~TS590x0~articles/3925134721/0266554465.jpeg"
 
         if(!Object.keys(item).length){
             // uri=demo
-            return <FolderButton/>
+            return <FolderButton pick={pick}/>
         }
         
         let uri = "file:///"+item.path

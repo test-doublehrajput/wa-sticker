@@ -31,18 +31,20 @@ import RNFS from 'react-native-fs';
 //   })
 // })
 
-RNFS.readDir(RNFS.DocumentDirectoryPath ).then(res=>{
-  res.map(i=>{
-    if (i.isDirectory()) {
-      return RNFS.stat(i.path).then(r=>console.log(r))
-    }
-  })
-})
+// RNFS.readDir(RNFS.DocumentDirectoryPath ).then(res=>{
+//   res.map(i=>{
+//     if (i.isDirectory()) {
+//       return RNFS.stat(i.path).then(r=>console.log(r))
+//     }
+//   })
+// })
 
 
 const sortIcon = <Icon name="sort-amount-desc" size={20} color="grey" style={HomeStyle.control.sort.icon} />
 
 export default function HomeScreen({ navigation }){
+    
+    const [test, setTest] = React.useState(4);
 
     return (
       <>
@@ -52,7 +54,7 @@ export default function HomeScreen({ navigation }){
           <View style={HomeStyle.control.types}> 
             <FilterButtons />
           </View>
-      
+          <><Text>{test}</Text></>
           <View style={HomeStyle.control.sort}> 
             {sortIcon}
             <Text style={HomeStyle.control.sort.text}>A-Z {' '}  Newly {' '} Older</Text>
@@ -60,7 +62,7 @@ export default function HomeScreen({ navigation }){
       </View>
 
       <View style={HomeStyle.list}> 
-        <PackList nav={navigation} data={{name:'name1',no:123}}/>
+        <PackList nav={navigation} data={{name:'name1',fun:setTest}}/>
       </View>
 
 
