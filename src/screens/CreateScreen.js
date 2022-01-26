@@ -22,23 +22,21 @@ import RNWhatsAppStickers from 'react-native-whatsapp-stickers'
 import RNFS from 'react-native-fs'
 // import ImageResizer from 'react-native-image-resizer';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import isThisAnimatedPhoto, {isThisAnimatedWEBP} from '../utils/isThisAnimatedPhoto'
 
-const url1 = "https://images.unsplash.com/photo-1642327939972-0a862be6c638?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
-const url2 = "https://media.istockphoto.com/photos/labyrinth-picture-id139723134?s=612x612"
-const url3 = "https://media.istockphoto.com/photos/white-sticky-note-with-happy-new-year-2022-and-red-push-pin-on-yellow-picture-id1356040800?b=1&k=20&m=1356040800&s=170667a&w=0&h=MyPUoGqq5HMJVDYVSzctZD0mzoZO7lOycUUDpgXR4SM="
 const log = console.log;
 
-const Choose =()=> {
+const Choose =({add2wa, justCreate})=> {
     return(
         <>
         <View style={mid2.btnHolder} > 
-            <Pressable style={mid2.buttonAnimated}>
-                <Text style={mid2.text}>Animated</Text> 
+            <Pressable style={mid2.buttonAnimated} onPress={justCreate}>
+                <Text style={mid2.text}>Create Only</Text> 
             </Pressable>
         </View>
         <View style={mid2.btnHolder2} > 
-            <Pressable style={mid2.buttonStatic}>
-                <Text style={mid2.text}>Static</Text>
+            <Pressable style={mid2.buttonStatic} onPress={add2wa}>
+                <Text style={mid2.text}>Add to WhatsaApp</Text>
             </Pressable>
         </View>
         </>
@@ -67,7 +65,7 @@ const Preview =({data, removeP})=> {
 
 }
 
-const Form =({isAnimated, setAnimated, packName, onChangePack, authorName, onChangeAuthor, send })=>{
+const Form =({isAnimated, setAnimated, packName, onChangePack, authorName, onChangeAuthor, send, add })=>{
 
     return(
         <>
@@ -92,6 +90,16 @@ const Form =({isAnimated, setAnimated, packName, onChangePack, authorName, onCha
                         marginTop:14}}> SEND 
                 </Text>
             </Pressable>
+            <Pressable 
+                Style={{flex:1,backgroundColor:'red'}} 
+                onPress={add}>
+                <Text style={{
+                        fontSize:14, 
+                        fontWeight:'900', 
+                        marginLeft:14,
+                        marginTop:14}}> ADD 1 
+                </Text>
+            </Pressable>
 
             <Switch
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
@@ -107,46 +115,69 @@ const Form =({isAnimated, setAnimated, packName, onChangePack, authorName, onCha
     );
 }
 
-// RNFS.readDir("/data/user/0/com.app1/files/stickers_asset")
-// RNFS.readDir("/data/user/0/com.app1/files/stickers_asset/Pack 2")
-// .then(res=>{
-//     // var normalizeFilePath = (path: string) => (path.startsWith('file://') ? path.slice(7) : path);
-//     let afile = res.map(i=>i.path);
-//     console.log(afile)
-//     // console.log(normalizeFilePath(afile));
-//     // console.log(normalizeFilePath("file:///data/user/0/com.app1/files/stickers_asset/Pack 2"));
-//     // RNFS.copyFile(afile, "/data/user/0/com.app1/files/stickers_asset/Pack 2/new.webp")
-//     // .then(res1=>console.log('res1 ',res1))
-// })
-RNWhatsAppStickers.getDownloadedStickers().then(res=>console.log('down ',res))
+const addOne =  (path) =>{  
+    // isThisAnimatedPhoto('path')
+    // log('path ',path[0])
+    var Buffer = require('buffer/').Buffer
+    RNFS.readFile(path[0], 'base64')
+    .then(base64=>Buffer.from(base64, 'base64'))
+    .then(res=>isThisAnimatedWEBP(res))
+    .then(result=>log(result))
+
+}
+
 
 export default function(){
     const [PreviewImages, setPreviewImages] = React.useState([]);
     const [isAnimated, setAnimated] = React.useState(false);
     const [PackName, setPackName] = React.useState('Pack 1');
     const [AuthorName, setAuthorName] = React.useState('Author 1');
+    const [Version, setVersion] = React.useState(1);
 
     
     React.useEffect(()=>{
         // log('PreviewImages: ',PreviewImages)
         // log(`PackName:${PackName} | AuthorName:${AuthorName}`)
-    },[AuthorName, PackName, PreviewImages])
+        // log('PreviewImages ',PreviewImages)
+    },[AuthorName, PackName, PreviewImages, isAnimated])
 
-    const removeP =(x)=>{
+    const removeP=(x)=>{
         setPreviewImages(PreviewImages.filter((i,index)=>index!==x));
     }
 
-    const send =()=>{
-        const packData = {
-            authorName:AuthorName,
-            packName:PackName,
-            isAnimated:isAnimated,
-            previewImages:PreviewImages,
-        }
-        let jsonData = DecoratePack(packData)
-        RNWhatsAppStickers.prepare(jsonData)
-        .then(res=>console.log(res))
+    
+    const add =()=>{
+        addOne(PreviewImages, 'Pack 1')
+    }
+
+    const send =async()=>{
+        // log('sending,,,')
+        try{
         
+            const packData = {
+                authorName:AuthorName,
+                packName:PackName,
+                isAnimated:isAnimated,
+                version:Version,
+                previewImages:PreviewImages,
+            }
+
+            let jsonData; 
+            await DecoratePack(packData).then(r=>jsonData=r)
+            console.log('jsonData  ',jsonData);
+            // return 0;
+            RNWhatsAppStickers.prepare(jsonData)
+            .then(res=>res.slice(1))
+            .then(str=>JSON.parse(str))
+            .then(obj=>{
+                log(obj['identifier'])
+                return RNWhatsAppStickers.send(obj['identifier'],obj['identifier'])
+            })
+            .catch(err=>Alert.alert('Could not create pack',err.toString()))
+
+        }catch(e){
+            Alert.alert('Problem with pack',e.toString())
+        }
         
     }
     return(
@@ -160,6 +191,7 @@ export default function(){
                         authorName={AuthorName}
                         onChangeAuthor={setAuthorName}
                         send={send}
+                        add={add}
                         />
                 </View>
 
@@ -167,12 +199,13 @@ export default function(){
                     <Preview data={PreviewImages} removeP={removeP}/>
                 </View>
 
-                {/* <View style={mid2.main}>
-                    <Choose/>
-                </View> */}
                 
                 <View style={down.main}>
-                    <Gallary setP={setPreviewImages}/>
+                    <Gallary setP={setPreviewImages} typePhoto={isAnimated}/>
+                </View>
+
+                <View style={mid2.main}>
+                    <Choose add2wa={send} justCreate={()=>(Alert.alert('123'))}/>
                 </View>
         </View>
     );
@@ -214,9 +247,10 @@ const mid2 = StyleSheet.create({
         flex:0.15,
         backgroundColor:'white',
         flexDirection:'row',
-        paddingLeft:10,
-        paddingRight:10,
+        paddingLeft:20,
+        paddingRight:20,
         marginBottom:10,
+        paddingTop:10,
     },
     btnHolder:{
         flex:1,
@@ -240,7 +274,7 @@ const mid2 = StyleSheet.create({
         justifyContent:'center',
     },
     text:{
-        fontSize:16,
+        fontSize:12,
         fontWeight:"400",
         color:'white'
     }   

@@ -35,13 +35,14 @@ const FolderButton = ({pick}) => (
 // }
     
 
-export default function Gallary({route, navigation, setP}){
+export default function Gallary({route, navigation, setP, typePhoto}){
     const [allPaths, setAll] = React.useState([{}]);
     // TODO 
     const [Folders, setFolders] = React.useState({});
     
     const [Selected, select] = React.useState([]);
     
+
     // 
     React.useEffect(()=>{  
         //* For Foldered
@@ -56,8 +57,10 @@ export default function Gallary({route, navigation, setP}){
         //     return res;
         // })
         //* For Sorted Flat Array (All files only)
-        Storage0().then(res=>setAll(p=>[...p,...res]))
-    },[])
+        Storage0(typePhoto).then(res=>setAll(p=>[...p,...res]))
+
+    },[typePhoto])
+
     React.useEffect(()=>{  
         // log(Selected)
     },[Selected])

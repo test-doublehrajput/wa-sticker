@@ -1,6 +1,8 @@
 var RNFS = require('react-native-fs');
 const log = console.log;
 
+//TODO 
+//!handle if app is freshe installed. no existance of 'stickers_asset'
 const GetStickersAsset = () =>{
     return RNFS.readDir(RNFS.DocumentDirectoryPath)
     .then(result=>result.filter(item=>item.name === 'stickers_asset')[0].path)

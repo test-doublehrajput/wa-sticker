@@ -3,6 +3,7 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import RNFS from 'react-native-fs';
+import isThisAnimatedPhoto from '../utils/isThisAnimatedPhoto';
 
 const log = console.log;
 // PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE)
@@ -14,6 +15,7 @@ let Gallary = {} ;
 const isImageFile = (item) => {
   
   const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif']
+  // const extensions = ['png', 'webp']
   const pattern = new RegExp('\.[0-9a-z]+$') ;
   let fileName;
   let res;
@@ -106,12 +108,13 @@ const cleaning=(res, item)=>{
 // root 0 and all folders in 0
 // TODO provide methods to scan each folder on given path. go nested with user tap.
 export default function Storage0(){
+
   try{
     return RNFS.readDir(RNFS.ExternalStorageDirectoryPath) // scan root /0
     .then(res=>{
         let directories = []
 
-        let images = res.filter(item=>{
+        let images = res.filter(item=>{ 
           if (item.isFile() && isImageFile(item)) return true
           if (item.isDirectory()){
             directories.push(item)
@@ -170,13 +173,15 @@ export default function Storage0(){
         });
         
         // get rid of all functions exist in oebject because It could cause error in some cases; i.e route, storing 
-        let final = JSON.parse(JSON.stringify(imagesOnly))
         
+
+        let final = JSON.parse(JSON.stringify(imagesOnly))
         
         // convert the array to object {Folder:[files],...} for ease of access later 
         let arrGallary = final.map(i=>Object.values(i))
         // arrGallary.map(i=>log(i))
         let flatArray = arrGallary.flat().flat()
+
         let sortArray = flatArray.sort((next,prev) => Date.parse(prev.mtime)-Date.parse(next.mtime))
         
         return sortArray;
